@@ -2,4 +2,4 @@
 <br>
 https://github.com/aniakonie/My_Sound_Archive
 <br><br>
-This version, which is written in Flask, is deployed on https://www.mysoundarchive.com/
+Currently working version, which is written in Flask, is deployed on https://www.mysoundarchive.com/
