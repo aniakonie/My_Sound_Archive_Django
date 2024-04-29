@@ -16,6 +16,7 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    color: white;
     }
     footer {
     width: 85%;
@@ -23,6 +24,10 @@
     margin-right: auto;
     margin-top: auto;
     }
+    .center_white {
+    text-align: center;
+    color: white;
+}
     </style>
     {% endblock %}
 
@@ -31,7 +36,7 @@
     <link rel="icon" type="png" href="{% static 'images/android-chrome-192x192.png' %}">
   </head>
   <body style="background-color:black;">
-  
+
     <nav class="navbar navbar-expand-lg" style="background-color: black;">
         <div class="container-fluid">
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,25 +47,62 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/" style="color:white; font-weight:bold;">Home</a>
                 </li>
+
+            {% if not user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/how-it-works" style="color:white; font-weight:bold;">How it works</a>
+                    <a class="nav-link active" aria-current="page" href="/how_it_works" style="color:white; font-weight:bold;">How it works</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/demo" style="color:white; font-weight:bold;">See an example</a>
                 </li>
+            {% endif %}
             </ul>
             <ul class="navbar-nav me-2 mb-2 mb-lg-0">
+            {% if not user.is_authenticated %}  
             <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="/login" style="color:white; font-weight:bold;">Log in</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/sign-up" style="color:white; font-weight:bold;">Sign up</a>
+                <a class="nav-link active" aria-current="page" href="/signup" style="color:white; font-weight:bold;">Sign up</a>
             </li>
+            {% endif %}
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/archive" style="color:white; font-weight:bold;">My Archive</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/settings" style="color:white; font-weight:bold;">Settings</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/logout" style="color:white; font-weight:bold;">Log out</a>
+            </li>
+            {% endif %}
             </ul>
           </div>
         </div>
     </nav>
     
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger" role="alert">
+                    {{ message }}
+                </div>
+            {% endif %}
+            {% if message.tags == 'success' %}
+                <div class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% endif %}
+            {% if message.tags == 'info' %}
+                <div class="alert alert-info" role="alert">
+                    {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+
     <div style="margin-bottom: 40px;"></div>
     <div class="container">{% block content %} {% endblock %}</div>
     

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Spotify Login{% endblock %}
+
+
+{% block content %}
+<div style="margin-bottom: 100px;"></div>
+<h1 class="center_white">Hello {{ username }},</h1>
+<h5 class="center_white">Your Sound Archive account is now created.</h5>
+<br>
+<br>
+<br>
+<h5 class="center_white">Please log in to Spotify to retrieve your music collection:</h5>
+<br>
+<div style="text-align: center;">
+    <form method="POST">
+        <input type=submit value="Log in to Spotify" class="btn btn-dark">
+    </form>
+</div>
+{% endblock %}
+

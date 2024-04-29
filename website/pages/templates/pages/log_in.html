@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Sign up{% endblock %}
+{% block title %}Log in{% endblock %}
 
 {% block style %}
 <style>
@@ -30,9 +30,9 @@ body {
 {% block content %} 
 <div>
     <div style="margin-bottom: 20px;"></div>   
-    <h1 style="text-align: center; color:white;">Sign up</h1>
+    <h1 style="text-align: center; color:white;">Log in</h1>
     <br>
-    <form action="/signup" method="post">
+    <form action="/login" method="post">
         {% csrf_token %}
 
         {{ form.username.label }}:<br>
@@ -41,25 +41,9 @@ body {
         {{ form.password }}
 
     <div style="margin-bottom: 5px;"></div>
-    <input type="checkbox" onclick="myFunction()" id="checkbox">
-    <label for="checkbox" style="color:white;"> Show Password</label>
     <br>
     <br>
-    <input type=submit value="Register" class="btn btn-dark">
+    <input type=submit value="Log in" class="btn btn-dark">
     </form>
 </div>
-{% endblock %}
-
-
-{% block javascript %}
-<script>
-function myFunction() {
-    var x = document.getElementById("pswd");
-    if (x.type === "password") {
-      x.type = "text";
-    } else {
-      x.type = "password";
-    }
-  }
-</script>
 {% endblock %}
