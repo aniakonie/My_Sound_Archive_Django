@@ -86,6 +86,8 @@ def log_out(request):
 @login_required
 def log_in_to_spotify(request):
     user = request.user
+    if request.method == "POST":
+        return redirect('spotify_auth:authorization')
     return render(request, "log_in_to_spotify.html", {"username": user.username})
 
 
