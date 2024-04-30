@@ -67,8 +67,7 @@ def callback(request):
                 code = request.GET.get("code")
                 access_token, refresh_token = get_token_initial(code)
                 save_token(access_token, refresh_token, request)
-    #redirect to archive page
-    return redirect('pages:home')
+    return redirect('spotify_library:create_archive')
 
 
 def request_authorization():

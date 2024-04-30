@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Create archive{% endblock %}
+
+
+{% block content %} 
+<div style="margin-bottom: 100px;"></div>
+<h3 class="center_white">You have successfully logged in to Spotify!</h3>
+<br>
+<h5 class="center_white">Retrieving all data from your Spotify account may take up to 10 minutes.</h5>
+<h5 class="center_white">Please click below to start downloading your data:</h5>
+<div style="margin-bottom: 50px;"></div>
+<div style="text-align: center;">
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Create my archive" name="create_archive" class="btn btn-dark">
+    <div style="margin-bottom: 20px;"></div>
+    <input type="submit" value="Changed my mind" name="create_archive" class="btn btn-dark">
+</form>
+</div>
+{% endblock %}
+

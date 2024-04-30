@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'pages',
     'spotify_auth',
+    'spotify_library',
 ]
 
 MIDDLEWARE = [
@@ -47,7 +48,11 @@ ROOT_URLCONF = 'website.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates", BASE_DIR / "pages/templates/pages"],
+        'DIRS': [
+            BASE_DIR / "templates",
+            BASE_DIR / "pages/templates/pages",
+            BASE_DIR / "spotify_library/templates/spotify_library",
+            ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

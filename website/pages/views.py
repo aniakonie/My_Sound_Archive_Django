@@ -45,9 +45,16 @@ def sign_up(request):
             password = form.cleaned_data["password"]
             is_already_taken = User.objects.filter(username=username)
             if is_already_taken:
-                messages.add_message(request, messages.ERROR, "Such user already exists. Please choose different username.")
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    '''Such user already exists.
+                    Please choose different username.''')
             else:
-                user = User.objects.create_user(username=username, password=password)
+                user = User.objects.create_user(
+                    username=username,
+                    password=password
+                    )
                 user.save()
                 user_auth = authenticate(username=username, password=password)
                 if user_auth:
@@ -70,7 +77,10 @@ def log_in(request):
                 login(request, user_auth)
                 return redirect(log_in_to_spotify) #change to archive page
             else:
-                messages.add_message(request, messages.ERROR, "Wrong login credentials.")
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "Wrong login credentials.")
     else:
         form = LoginForm()
 
@@ -88,7 +98,11 @@ def log_in_to_spotify(request):
     user = request.user
     if request.method == "POST":
         return redirect('spotify_auth:authorization')
-    return render(request, "log_in_to_spotify.html", {"username": user.username})
+    return render(
+        request,
+        "log_in_to_spotify.html",
+        {"username": user.username}
+        )
 
 
 #TODO
