@@ -169,10 +169,30 @@ def save_token(access_token, refresh_token, request):
         return access_token
 
 
-def convert_to_base64_str(data):
-    data_bytes = data.encode('ascii')
-    data_base64_str = base64.b64encode(data_bytes).decode()
-    return data_base64_str
+def get_access_token(request):
+    current_user = request.user
+    spotify_user = SpotifyToken.objects.get(user_id=current_user.id)
+    access_token = spotify_user.access_token
+    refresh_token = spotify_user.refresh_token
+    is_valid = check_token_validity(access_token)
+    if is_valid == False:
+        access_token = do_refresh_token(refresh_token, request)
+    return access_token
+
+
+def check_token_validity(access_token):
+    '''making an API request to check the type of response'''
+    response = spotify_req_get_current_user_profile(access_token)
+    return response.status_code != 401
+
+
+def do_refresh_token(refresh_token, request):
+    grant_type = 'refresh_token'
+    params = {'grant_type': grant_type, 'refresh_token': refresh_token}
+    access_token_response_dict = token_request(params)
+    access_token = access_token_response_dict['access_token']
+    save_token(access_token, refresh_token, request)
+    return access_token
 
 
 def get_spotify_id(access_token):
@@ -197,3 +217,9 @@ def spotify_req_get_current_user_profile(access_token):
         headers=headers
         )
     return current_user_profile_data_response
+
+
+def convert_to_base64_str(data):
+    data_bytes = data.encode('ascii')
+    data_base64_str = base64.b64encode(data_bytes).decode()
+    return data_base64_str
