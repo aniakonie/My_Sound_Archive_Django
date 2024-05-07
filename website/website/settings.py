@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'pages',
     'spotify_auth',
     'spotify_library',
+    'sound_archive',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +53,7 @@ TEMPLATES = [
             BASE_DIR / "templates",
             BASE_DIR / "pages/templates/pages",
             BASE_DIR / "spotify_library/templates/spotify_library",
+            BASE_DIR / "sound_archive/templates/sound_archive",
             ],
         'APP_DIRS': True,
         'OPTIONS': {

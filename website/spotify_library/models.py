@@ -34,7 +34,7 @@ class UserTracks(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'track_uri'],
+                fields=['user', 'track_uri', 'playlist_id_or_saved_song'],
                 name='unique_track_uris_for_user'
                 )
         ]
@@ -79,11 +79,6 @@ class Tracks(models.Model):
     album_artist_add2 = models.CharField(max_length=100)
     album_title = models.CharField(max_length=100)
     album_uri = models.CharField(max_length=36)
-
-
-class Genres(models.Model):
-    genre = models.CharField(max_length=30, unique=True)
-    subgenre = models.CharField(max_length=30)
 
 
 class UserSettings(models.Model):
