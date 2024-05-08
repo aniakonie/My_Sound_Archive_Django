@@ -8,10 +8,10 @@ from django.contrib.auth.models import User
 
 def classify_artists_genres(request):
     '''retrieving all artists without corresponding genres from database'''
-    artists = Artists.objects.filter(artist_genres = False)
+    artists = Artists.objects.filter(artist_genres = '')
     if artists:
-        artists_list = [artist for artist in artists]
-        artists_uris_genres = spotify_get_artists_genres(artists_list, request)
+        artists_uris = [artist.artist_uri[15:] for artist in list(artists)]
+        artists_uris_genres = spotify_get_artists_genres(artists_uris, request)
 
         artists_uris_genres_main_genre = []
         for artist in artists_uris_genres:
@@ -32,22 +32,15 @@ def save_artists_genres(artists_uris_genres_main_genre):
         artist_uri_genre.artist_subgenre = 'others'
         artist_uri_genre.save()
 
-
 #TODO add subgenres classification
-
 
 def save_user_artists_genres(request):
     '''saving genres and subgenres to table user_artists'''
     user_artists = UserArtists.objects.filter(user = request.user)
-    user_artists_uris = [artist.artist_uri for artist in user_artists]
-    for user_artist_uri in user_artists_uris:
-        artist = Artists.objects.get(artist_uri = user_artist_uri)
-        artist_main_genre = artist.artist_main_genre
-        artist_subgenre = artist.artist_subgenre
-
-        user_artist = UserArtists.objects.get(artist_uri = user_artist_uri, user = request.user)
-        user_artist.artist_main_genre_custom = artist_main_genre
-        user_artist.artist_subgenre_custom = artist_subgenre
+    for user_artist in user_artists:
+        artist = user_artist.artist_uri
+        user_artist.artist_main_genre_custom = artist.artist_main_genre
+        user_artist.artist_subgenre_custom = artist.artist_subgenre
         user_artist.save()
 
 

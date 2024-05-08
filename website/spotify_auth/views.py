@@ -131,8 +131,7 @@ def token_request(params):
 
 
 def save_token(access_token, refresh_token, request):
-    current_user = request.user
-    spotify_user = SpotifyToken.objects.filter(user_id = current_user.id)
+    spotify_user = SpotifyToken.objects.filter(user = request.user)
     if not spotify_user:
         spotify_id, status_code = get_spotify_id(access_token)
         if status_code == 403:
@@ -158,14 +157,14 @@ def save_token(access_token, refresh_token, request):
                 return redirect('pages:home')
             else:
                 new_spotify_user = SpotifyToken(
-                    user_id=current_user.id,
+                    user=request.user,
                     spotify_id=spotify_id,
                     access_token=access_token,
                     refresh_token=refresh_token)
                 new_spotify_user.save()
     else:
-        current_user.access_token = access_token
-        current_user.save()
+        spotify_user[0].access_token = access_token
+        spotify_user[0].save()
         return access_token
 
 

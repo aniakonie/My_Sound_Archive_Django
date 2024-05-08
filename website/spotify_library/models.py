@@ -3,6 +3,28 @@ from django.db.models import UniqueConstraint
 from django.contrib.auth.models import User
 
 
+class Tracks(models.Model):
+    track_uri = models.CharField(max_length=36, unique=True)
+    track_artist_main = models.CharField(max_length=100)
+    main_artist_uri = models.CharField(max_length=37)
+    track_artist_add1 = models.CharField(max_length=100)
+    track_artist_add2 = models.CharField(max_length=100)
+    track_title = models.CharField(max_length=100)
+    album_artist_main = models.CharField(max_length=100)
+    album_artist_add1 = models.CharField(max_length=100)
+    album_artist_add2 = models.CharField(max_length=100)
+    album_title = models.CharField(max_length=100)
+    album_uri = models.CharField(max_length=36)
+
+
+class Artists(models.Model):
+    artist_uri = models.CharField(max_length=37, unique=True)
+    artist_name = models.CharField(max_length=50)
+    artist_genres = models.CharField(max_length=300)
+    artist_main_genre = models.CharField(max_length=20)
+    artist_subgenre = models.CharField(max_length=30)
+
+
 class UserPlaylists(models.Model):
     user = models.ForeignKey(
         User,
@@ -27,7 +49,7 @@ class UserTracks(models.Model):
         User,
         on_delete=models.CASCADE,
         )
-    track_uri = models.CharField(max_length=36)
+    track_uri = models.ForeignKey(Tracks, on_delete=models.PROTECT)
     playlist_id_or_saved_song = models.CharField(max_length=25)
     display_in_library = models.BooleanField()
 
@@ -45,7 +67,7 @@ class UserArtists(models.Model):
         User,
         on_delete=models.CASCADE,
         )
-    artist_uri = models.CharField(max_length=37)
+    artist_uri = models.ForeignKey(Artists, on_delete=models.PROTECT)
     artist_name = models.CharField(max_length=50)
     artist_main_genre_custom = models.CharField(max_length=20)
     artist_subgenre_custom = models.CharField(max_length=30)
@@ -57,28 +79,6 @@ class UserArtists(models.Model):
                 name='unique_artist_uris_for_user'
                 )
         ]
-
-
-class Artists(models.Model):
-    artist_uri = models.CharField(max_length=37, unique=True)
-    artist_name = models.CharField(max_length=50)
-    artist_genres = models.CharField(max_length=300)
-    artist_main_genre = models.CharField(max_length=20)
-    artist_subgenre = models.CharField(max_length=30)
-
-
-class Tracks(models.Model):
-    track_uri = models.CharField(max_length=36, unique=True)
-    track_artist_main = models.CharField(max_length=100)
-    main_artist_uri = models.CharField(max_length=37)
-    track_artist_add1 = models.CharField(max_length=100)
-    track_artist_add2 = models.CharField(max_length=100)
-    track_title = models.CharField(max_length=100)
-    album_artist_main = models.CharField(max_length=100)
-    album_artist_add1 = models.CharField(max_length=100)
-    album_artist_add2 = models.CharField(max_length=100)
-    album_title = models.CharField(max_length=100)
-    album_uri = models.CharField(max_length=36)
 
 
 class UserSettings(models.Model):

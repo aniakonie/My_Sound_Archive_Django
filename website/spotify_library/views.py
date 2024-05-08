@@ -1,9 +1,10 @@
-import json
 import time
+import json
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
+from .models import UserSettings
 from .get_spotify_data import get_spotify_data
 from .parse_spotify_data import parse_spotify_data
 from .save_spotify_data import save_spotify_data
@@ -16,15 +17,14 @@ from sound_archive.genre_classification import classify_artists_genres
 def create_archive(request):
     if request.method == "POST":
         if request.POST["create_archive"] == "Changed my mind":
-            pass
-            #return redirect to archive
+            return redirect("sound_archive:archive")
         else:
-            create_archive(request)
-            #return redirect to archive
+            do_create_archive(request)
+            return redirect("sound_archive:archive")
     return render(request, "create_archive.html")
 
 
-def create_archive(request):
+def do_create_archive(request):
     spotify_user = SpotifyToken.objects.get(user_id=request.user.id)
     spotify_id = spotify_user.spotify_id
     access_token = get_access_token(request)
@@ -37,6 +37,16 @@ def create_archive(request):
         )
     end = time.perf_counter()
     print('spotify_data time: ', end - start)
+
+
+    # with open('spotify_playlists.json', 'r') as json_file:
+    #     spotify_playlists = json.load(json_file)
+
+    # with open('spotify_saved_tracks.json', 'r') as json_file:
+    #     spotify_saved_tracks = json.load(json_file)
+    
+    # with open('spotify_all_playlists_tracks.json', 'r') as json_file:
+    #     spotify_all_playlists_tracks = json.load(json_file)
 
 
     start = time.perf_counter()
@@ -62,14 +72,6 @@ def create_archive(request):
     end = time.perf_counter()
     print('retrieving and saving artists genres time: ', end - start) 
 
+    user_settings = UserSettings(user = request.user, is_library_created = True)
+    user_settings.save()
 
-    print('library retrieved')
-    pass
-
-
-
-
-# def save_default_user_settings():
-#     user_settings = UserSettings(current_user.id)
-#     db.session.add(user_settings)
-#     db.session.commit()

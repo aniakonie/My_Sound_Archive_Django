@@ -2,19 +2,18 @@ import requests
 from spotify_auth.models import SpotifyToken
 
 
-def spotify_get_artists_genres(artists_list, request):
-
-    artists_uris = [artist.artist_uri[15:] for artist in artists_list]
+def spotify_get_artists_genres(artists_uris, request):
 
     user = SpotifyToken.objects.get(user = request.user)
     access_token = user.access_token
+    print(access_token)
 
     artists_uris_genres = []
 
     n = len(artists_uris)//50
     a = 0
     b = 50
-    for item in range(n):
+    for _ in range(n):
         artists_uris_50items = artists_uris[a:b]
 
         spotify_response_json, status_code = spotify_artists(artists_uris_50items, access_token)
@@ -44,6 +43,6 @@ def spotify_artists(artists_uris_50items, access_token):
     headers = {
         'Authorization': 'Bearer ' + access_token
     }
-    spotify_response = requests.get(url, headers=headers)
-    status_code = spotify_response.status_code
-    return spotify_response, status_code
+    spotify_response_json = requests.get(url, headers=headers)
+    status_code = spotify_response_json.status_code
+    return spotify_response_json, status_code

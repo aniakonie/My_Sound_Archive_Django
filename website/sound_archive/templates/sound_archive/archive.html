@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block style %}
+<style>
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    }
+    .flex-container {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+    }
+    .flex-item {
+        padding: 20px;
+        box-sizing: border-box;
+    }
+    .fixed-width-1 {
+        flex-basis: 200px;
+    }
+    .fixed-width-2 {
+        flex-basis: 250px;
+    }
+    .fixed-width-3 {
+        flex-basis: 150px;
+    }
+    .flex-grow {
+        flex-grow: 1;
+    }
+    footer {
+        width: 85%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: auto;
+    }
+</style>
+{% endblock %}
+
+{% block title %}My Archive{% endblock %}
+
+{% block content %}
+
+{% if is_library_created == True %}
+    <div class="flex-container">
+        <div class="flex-item fixed-width-3">
+            <h3 style="color:white;">Genres</h3>
+            <div style="margin-bottom: 20px;"></div>
+            {% for genre in genres %}
+                <form method="POST">
+                    {% csrf_token %}
+                    {% if genre == selected_genre %}
+                    <button type="submit" name="selected_genre" value="{{ genre }}" class="btn btn-light">{{ genre }}</button>
+                    {% else %}
+                    <button type="submit" name="selected_genre" value="{{ genre }}" class="btn btn-dark">{{ genre }}</button>
+                    {% endif %}
+                </form>
+            <div style="margin-bottom: 5px;"></div>
+            {% endfor %}
+        </div>
+
+        <div class="flex-item fixed-width-1">
+            <h3 style="color:white;">Subgenres</h3>
+            <div style="margin-bottom: 20px;"></div>
+            {% for subgenre in subgenres %}
+                <form method="POST">
+                    {% csrf_token %}
+                    {% if subgenre == selected_subgenre %}
+                    <button type="submit" name="selected_subgenre" value="{{ subgenre }}" class="btn btn-light">{{ subgenre }}</button>
+                    {% else %}
+                    <button type="submit" name="selected_subgenre" value="{{ subgenre }}" class="btn btn-dark">{{ subgenre }}</button>
+                    {% endif %}
+                </form>
+                <div style="margin-bottom: 5px;"></div>
+            {% endfor %}
+        </div>
+
+        <div class="flex-item fixed-width-2">
+            <h3 style="color:white;">Artists</h3>
+            <div style="margin-bottom: 20px;"></div>
+            {% for artist in artists %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="selected_artist_uri" value="{{ artist.0 }}">
+                    {% if artist.0 == selected_artist_uri %}
+                    <input type="submit" name="selected_artist_name" value="{{ artist.1 }}" class="btn btn-light">
+                    {% else %}
+                    <input type="submit" name="selected_artist_name" value="{{ artist.1 }}" class="btn btn-dark">
+                    {% endif %}
+                </form>
+            <div style="margin-bottom: 5px;"></div>
+            {% endfor %}
+        </div>
+
+        <div class="flex-item flex-grow: 1">
+            <h3 style="color:white;">Tracks</h3>
+            <div style="margin-bottom: 20px;"></div>
+            {% if selected_artist_name != "Loose tracks" %}
+                {% for track in tracklist %}
+                    <button type="button" class="btn btn-dark">
+                        <a class="play_track" href="{{ track.track_uri }}">PL</a> <a class="open_album" href="{{ track.album_uri }}">AL</a>
+                        <span class="track">{{ track.track_title }}</span>
+                    </button>
+                    <div style="margin-bottom: 5px;"></div>
+                {% endfor %}
+            
+            {% else %}
+                {% for track in tracklist %}
+                    <button type="button" class="btn btn-dark">
+                        <a class="play_track" href="{{ track.track_uri }}">PL </a>
+                        <a class="open_album" href="{{ track.album_uri }}">AL </a>
+                        <span class="track">{{ track.track_artist_main }} - {{ track.track_title }} </span>          
+                        {% if track.track_artist_add1 != None %}
+                        <span class="track_add">[ with {{ track.track_artist_add1 }}
+                        {% if track.track_artist_add2 != None %}
+                        <span class="track_add">, {{ track.track_artist_add2 }}</span>
+                        {% endif %}]
+                        </span>
+                        {% endif %}
+                    </button>
+                    <div style="margin-bottom: 5px;"></div>    
+                {% endfor %}
+            {% endif %}
+
+            <br>
+            {% if tracklist_featured|length > 0 %}
+            <h5 style="color:white;">Featured tracks</h5>
+                {% for track in tracklist_featured %}    
+                    <button type="button" class="btn btn-dark">
+                        <a class="play_track" href="{{ track.track_uri }}">PL </a>
+                        <a class="open_album" href="{{ track.album_uri }}">AL </a>
+                        <span class="track">{{ track.track_artist_main }} - {{ track.track_title }} </span>          
+                        {% if track.track_artist_add1 != None %}
+                        <span class="track_add">[ with {{ track.track_artist_add1 }}
+                        {% if track.track_artist_add2 != None %}
+                        <span class="track_add">, {{ track.track_artist_add2 }}</span>
+                        {% endif %}]
+                        </span>
+                        {% endif %}
+                    </button>
+                    <div style="margin-bottom: 5px;"></div> 
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    {% if not genres %}
+    <div style="margin-bottom: 100px;"></div>
+    <h5 style="text-align: center; color:white;">Looks like you don't have anything in your Spotify library yet.</h5>
+    {% endif %}
+
+<div style="margin-bottom: 200px;"></div>
+{% endif %}
+
+{% if is_library_created == False %}
+<div class="flex-container">
+    <div class="flex-item fixed-width-3">
+        <h3 style="color:white;">Genres</h3>
+    </div>
+    <div class="flex-item fixed-width-1">
+        <h3 style="color:white;">Subgenres</h3>
+    </div>
+    <div class="flex-item fixed-width-2">
+        <h3 style="color:white;">Artists</h3>
+    </div>
+    <div class="flex-item flex-grow: 1">
+        <h3 style="color:white;">Tracks</h3>
+    </div>
+    </div>
+</div>
+
+<br>
+<br>
+<br>
+<br>
+
+<div class="container">
+<h5 style="text-align: center; color:white;">Nothing here yet. Please log in to Spotify to retrieve your music collection.</h5>
+<br>
+<div style="text-align: center;">
+    <form method="POST">
+        {% csrf_token %}
+        <input type=submit value="Log in to Spotify" class="btn btn-dark">
+    </form>
+</div>
+<div style="margin-bottom: 400px;"></div>
+{% endif %}
+
+{% endblock %}
+
