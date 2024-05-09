@@ -25,7 +25,10 @@ def save_playlists_info(playlists_info_library, request):
 
 def save_saved_tracks(saved_tracks_library, request):
     for track in saved_tracks_library:
-        new_track = add_track_to_tracks(track)
+
+        new_artist = add_artist_to_artists(track)
+        add_artist_to_user_artists(track, request, new_artist)
+        new_track = add_track_to_tracks(track, new_artist)
         user_track = UserTracks(
             track_uri = new_track,
             playlist_id_or_saved_song = 'saved song',
@@ -33,9 +36,7 @@ def save_saved_tracks(saved_tracks_library, request):
             user = request.user
         )
         user_track.save()
-        new_artist = add_artist_to_artists(track)
-        add_artist_to_user_artists(track, request, new_artist)
-
+        
 
 def save_all_playlists_tracks(all_playlists_tracks_library, request):
     playlists_ids = list(all_playlists_tracks_library.keys())
@@ -45,7 +46,9 @@ def save_all_playlists_tracks(all_playlists_tracks_library, request):
         playlist_tracks = all_playlists_tracks_library[playlist]
 
         for track in playlist_tracks:
-            new_track = add_track_to_tracks(track)
+            new_artist = add_artist_to_artists(track)
+            add_artist_to_user_artists(track, request, new_artist)
+            new_track = add_track_to_tracks(track, new_artist)
             user_track, created = UserTracks.objects.get_or_create(
                 track_uri = new_track,
                 playlist_id_or_saved_song = playlist,
@@ -53,16 +56,14 @@ def save_all_playlists_tracks(all_playlists_tracks_library, request):
                 user = request.user
             )
             user_track.save()
-            new_artist = add_artist_to_artists(track)
-            add_artist_to_user_artists(track, request, new_artist)
 
 
-def add_track_to_tracks(track):
+def add_track_to_tracks(track, new_artist):
 
     new_track, created = Tracks.objects.get_or_create(
         track_uri = track["track_uri"],
         track_artist_main = track["track_artist_main"][:100],
-        main_artist_uri = track["main_artist_uri"],
+        main_artist_uri = new_artist,
         track_artist_add1 = track["track_artist_add1"][:100]
         if track["track_artist_add1"] is not None else '',
         track_artist_add2 = track["track_artist_add2"][:100]

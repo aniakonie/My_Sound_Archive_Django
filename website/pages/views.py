@@ -59,7 +59,7 @@ def sign_up(request):
                 user_auth = authenticate(username=username, password=password)
                 if user_auth:
                     login(request, user_auth)
-                    return redirect(log_in_to_spotify)
+                    return redirect('pages:log_in_to_spotify')
     else:
         form = SignupForm()
 
@@ -75,7 +75,7 @@ def log_in(request):
             user_auth = authenticate(username=username, password=password)
             if user_auth:
                 login(request, user_auth)
-                return redirect(log_in_to_spotify) #change to archive page
+                return redirect('sound_archive:archive')
             else:
                 messages.add_message(
                     request,
@@ -90,7 +90,7 @@ def log_in(request):
 @login_required
 def log_out(request):
     logout(request)
-    return redirect(home)
+    return redirect('pages:home')
 
 
 @login_required

@@ -29,24 +29,24 @@ def do_create_archive(request):
     spotify_id = spotify_user.spotify_id
     access_token = get_access_token(request)
 
-    start = time.perf_counter()
-    (spotify_playlists, spotify_saved_tracks,
-     spotify_all_playlists_tracks) = get_spotify_data(
-        access_token,
-        spotify_id
-        )
-    end = time.perf_counter()
-    print('spotify_data time: ', end - start)
+    # start = time.perf_counter()
+    # (spotify_playlists, spotify_saved_tracks,
+    #  spotify_all_playlists_tracks) = get_spotify_data(
+    #     access_token,
+    #     spotify_id
+    #     )
+    # end = time.perf_counter()
+    # print('spotify_data time: ', end - start)
 
 
-    # with open('spotify_playlists.json', 'r') as json_file:
-    #     spotify_playlists = json.load(json_file)
+    with open('spotify_playlists.json', 'r') as json_file:
+        spotify_playlists = json.load(json_file)
 
-    # with open('spotify_saved_tracks.json', 'r') as json_file:
-    #     spotify_saved_tracks = json.load(json_file)
+    with open('spotify_saved_tracks.json', 'r') as json_file:
+        spotify_saved_tracks = json.load(json_file)
     
-    # with open('spotify_all_playlists_tracks.json', 'r') as json_file:
-    #     spotify_all_playlists_tracks = json.load(json_file)
+    with open('spotify_all_playlists_tracks.json', 'r') as json_file:
+        spotify_all_playlists_tracks = json.load(json_file)
 
 
     start = time.perf_counter()

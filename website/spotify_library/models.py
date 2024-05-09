@@ -3,10 +3,18 @@ from django.db.models import UniqueConstraint
 from django.contrib.auth.models import User
 
 
+class Artists(models.Model):
+    artist_uri = models.CharField(max_length=37, unique=True)
+    artist_name = models.CharField(max_length=50)
+    artist_genres = models.CharField(max_length=300)
+    artist_main_genre = models.CharField(max_length=20)
+    artist_subgenre = models.CharField(max_length=30)
+
+
 class Tracks(models.Model):
     track_uri = models.CharField(max_length=36, unique=True)
     track_artist_main = models.CharField(max_length=100)
-    main_artist_uri = models.CharField(max_length=37)
+    main_artist_uri = models.ForeignKey(Artists, on_delete=models.PROTECT)
     track_artist_add1 = models.CharField(max_length=100)
     track_artist_add2 = models.CharField(max_length=100)
     track_title = models.CharField(max_length=100)
@@ -15,14 +23,6 @@ class Tracks(models.Model):
     album_artist_add2 = models.CharField(max_length=100)
     album_title = models.CharField(max_length=100)
     album_uri = models.CharField(max_length=36)
-
-
-class Artists(models.Model):
-    artist_uri = models.CharField(max_length=37, unique=True)
-    artist_name = models.CharField(max_length=50)
-    artist_genres = models.CharField(max_length=300)
-    artist_main_genre = models.CharField(max_length=20)
-    artist_subgenre = models.CharField(max_length=30)
 
 
 class UserPlaylists(models.Model):
