@@ -117,9 +117,9 @@ def archive_tracks(request, selected_genre, selected_subgenre, selected_artist_n
         if (selected_artist_uri, selected_artist_name) != ("Loose tracks", "Loose tracks"):
             tracklist = get_tracks_of_artist(request, selected_artist_uri)
             tracklist_featured = []
-            # tracklist_featured = get_featured_tracks_of_artist(request, selected_artist_name)
+            tracklist_featured = get_featured_tracks_of_artist(request, selected_artist_name)
         else:
-            # tracklist = get_loose_tracks_for_subgenre(request, selected_genre, selected_subgenre)
+            tracklist = get_loose_tracks_for_subgenre(request, selected_genre, selected_subgenre)
             tracklist_featured = []
 
         if request.method == "POST":
@@ -221,7 +221,6 @@ def get_artists_of_selected_subgenre(request, selected_genre, selected_subgenre)
         Q(track_count__gte=no_of_songs) #gte >=
     ).values('main_artist_uri')
 
-
     query = UserArtists.objects.filter(
         user = request.user,
         artist_main_genre_custom = selected_genre,
@@ -250,6 +249,61 @@ def get_tracks_of_artist(request, selected_artist_uri):
         track_uri=Min('track_uri'),
         album_uri=Min('album_uri')
     ).order_by('track_title')
+
+    tracklist = list(query)
+    return tracklist
+
+
+def get_featured_tracks_of_artist(request, selected_artist_name):
+    '''Select all featured tracks of an artist'''
+
+    subquery = UserTracks.objects.filter(
+        user = request.user,
+        display_in_library = True
+    ).values('track_uri__track_uri').distinct()
+
+    query = Tracks.objects.filter(
+        Q(track_artist_add1 = selected_artist_name) | Q(track_artist_add2 = selected_artist_name),
+        track_uri__in=Subquery(subquery)
+    ).values('track_uri', 'track_artist_main', 'track_artist_add1',
+             'track_artist_add2', 'track_title', 'album_uri'
+    ).order_by('track_title')
+
+    tracklist_featured = list(query)
+    return tracklist_featured
+
+
+def get_loose_tracks_for_subgenre(request, selected_genre, selected_subgenre):
+
+    user_settings = UserSettings.objects.get(user = request.user)
+    no_of_songs = user_settings.no_of_songs_into_folder
+
+    # All user's artists for a particular genre and subgenre
+    user_artists = UserArtists.objects.filter(
+        user = request.user,
+        artist_main_genre_custom = selected_genre,
+        artist_subgenre_custom = selected_subgenre
+    ).values('artist_uri__artist_uri')
+
+    # All user's tracks of artists with less than the defined number of songs
+    user_tracks_artists = Tracks.objects.filter(
+        usertracks__user=request.user,
+        usertracks__display_in_library=True
+    ).values('main_artist_uri').annotate(
+        track_count=Count('track_uri', distinct = True)
+    ).filter(
+        Q(track_count__lt=no_of_songs) #lt <
+    ).values('main_artist_uri__artist_uri')
+
+    subquery_combined = user_tracks_artists.intersection(user_artists)
+
+    query = Tracks.objects.filter(
+        usertracks__user=request.user,
+        usertracks__display_in_library=True,      
+        main_artist_uri__artist_uri__in=Subquery(subquery_combined)
+    ).values('track_artist_main', 'track_uri', 'track_artist_add1',
+             'track_artist_add2', 'track_title', 'album_uri', 'main_artist_uri'
+    ).distinct().order_by('track_artist_main')
 
     tracklist = list(query)
     return tracklist
