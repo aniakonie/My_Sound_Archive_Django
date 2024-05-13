@@ -1,4 +1,4 @@
-from .models import *
+from .models import Tracks, UserTracks, UserPlaylists, UserArtists, Artists
 
 
 def save_spotify_data(playlists_info_library, saved_tracks_library,
@@ -36,7 +36,7 @@ def save_saved_tracks(saved_tracks_library, request):
             user = request.user
         )
         user_track.save()
-        
+
 
 def save_all_playlists_tracks(all_playlists_tracks_library, request):
     playlists_ids = list(all_playlists_tracks_library.keys())

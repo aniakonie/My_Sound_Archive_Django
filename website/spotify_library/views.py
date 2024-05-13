@@ -1,5 +1,5 @@
 import time
-import json
+# import json
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -29,30 +29,30 @@ def do_create_archive(request):
     spotify_id = spotify_user.spotify_id
     access_token = get_access_token(request)
 
-    # start = time.perf_counter()
-    # (spotify_playlists, spotify_saved_tracks,
-    #  spotify_all_playlists_tracks) = get_spotify_data(
-    #     access_token,
-    #     spotify_id
-    #     )
-    # end = time.perf_counter()
-    # print('spotify_data time: ', end - start)
+    start = time.perf_counter()
+    (spotify_playlists, spotify_saved_tracks,
+     spotify_all_playlists_tracks) = get_spotify_data(
+        access_token,
+        spotify_id
+        )
+    end = time.perf_counter()
+    print('spotify_data time: ', end - start)
 
 
-    with open('spotify_playlists.json', 'r') as json_file:
-        spotify_playlists = json.load(json_file)
+    # with open('spotify_playlists.json', 'r') as json_file:
+    #     spotify_playlists = json.load(json_file)
 
-    with open('spotify_saved_tracks.json', 'r') as json_file:
-        spotify_saved_tracks = json.load(json_file)
-    
-    with open('spotify_all_playlists_tracks.json', 'r') as json_file:
-        spotify_all_playlists_tracks = json.load(json_file)
+    # with open('spotify_saved_tracks.json', 'r') as json_file:
+    #     spotify_saved_tracks = json.load(json_file)
+
+    # with open('spotify_all_playlists_tracks.json', 'r') as json_file:
+    #     spotify_all_playlists_tracks = json.load(json_file)
 
 
     start = time.perf_counter()
     (playlists_info_library, saved_tracks_library,
      all_playlists_tracks_library) = parse_spotify_data(
-        spotify_playlists, 
+        spotify_playlists,
         spotify_saved_tracks,
         spotify_all_playlists_tracks,
         spotify_id
@@ -65,13 +65,12 @@ def do_create_archive(request):
     save_spotify_data(playlists_info_library, saved_tracks_library,
                       all_playlists_tracks_library, request)
     end = time.perf_counter()
-    print('saving to database time: ', end - start)   
+    print('saving to database time: ', end - start)
 
     start = time.perf_counter()
     classify_artists_genres(request)
     end = time.perf_counter()
-    print('retrieving and saving artists genres time: ', end - start) 
+    print('retrieving and saving artists genres time: ', end - start)
 
     user_settings = UserSettings(user = request.user, is_library_created = True)
     user_settings.save()
-

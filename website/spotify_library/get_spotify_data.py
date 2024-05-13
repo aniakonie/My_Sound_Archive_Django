@@ -1,5 +1,6 @@
-import requests
 import urllib.parse
+
+import requests
 
 
 def get_spotify_data(access_token, spotify_id):
@@ -70,7 +71,7 @@ def get_spotify_playlist_songs_one_playlist(access_token, playlist_id):
             access_token,
             offset,
             playlist_id
-            )
+        )
         print(status_code)
         spotify_playlist_items_50items = spotify_playlist_items_response['items']
         if len(spotify_playlist_items_50items) == 0:
@@ -129,9 +130,9 @@ def spotify_req_get_users_saved_tracks(access_token, offset):
     base_url = 'https://api.spotify.com/v1/me/tracks'
     spotify_saved_tracks_response, status_code = spotify_request(
         base_url,
-        offset, 
+        offset,
         access_token
-        )
+    )
     return spotify_saved_tracks_response, status_code
 
 

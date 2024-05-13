@@ -2,16 +2,16 @@ import os
 import string
 import random
 import base64
+import urllib.parse
 
 import requests
-import urllib.parse
 from dotenv import load_dotenv
 
-from .models import SpotifyToken
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 
+from .models import SpotifyToken
 
 load_dotenv()
 
@@ -30,7 +30,7 @@ def callback(request):
     '''
     state_received = request.GET.get("state", None)
     # User tried to access this url by typing it in the browser.
-    if state_received == None:
+    if state_received is None:
         pass
         # abort(401)
     else:
@@ -42,7 +42,7 @@ def callback(request):
             # Spotify sent back an error - something went wrong
             # or user refused access to his/her spotify account.
             error = request.GET.get("error", None)
-            if error != None:
+            if error is not None:
                 if error == "access_denied":
                     messages.add_message(
                         request,
@@ -74,7 +74,7 @@ def request_authorization():
     client_id = os.getenv("CLIENT_ID")
     response_type = 'code'
     redirect_uri = os.getenv("REDIRECT_URI_SPOTIFY")
-    scope = '''user-library-read playlist-read-private user-follow-read 
+    scope = '''user-library-read playlist-read-private user-follow-read
         user-read-private user-read-email
         '''
     state = ''.join(random.choices(
@@ -174,7 +174,7 @@ def get_access_token(request):
     access_token = spotify_user.access_token
     refresh_token = spotify_user.refresh_token
     is_valid = check_token_validity(access_token)
-    if is_valid == False:
+    if is_valid is False:
         access_token = do_refresh_token(refresh_token, request)
     return access_token
 
@@ -214,7 +214,7 @@ def spotify_req_get_current_user_profile(access_token):
     current_user_profile_data_response = requests.get(
         get_user_base_url,
         headers=headers
-        )
+    )
     return current_user_profile_data_response
 
 

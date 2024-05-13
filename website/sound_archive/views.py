@@ -1,9 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db.models import Subquery, Count, Q, Min
-from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 
-from spotify_library.models import *
+from spotify_library.models import Tracks, UserArtists, UserSettings, UserTracks
 
 
 @login_required
@@ -20,8 +19,15 @@ def archive(request):
         genres = get_genres(request)
         if request.method == "POST":
             selected_genre = request.POST["selected_genre"]
-            return redirect('sound_archive:archive_genres', selected_genre = selected_genre)
-    return render(request, "archive.html", {"genres": genres, "is_library_created": is_library_created})
+            return redirect(
+                'sound_archive:archive_genres',
+                selected_genre = selected_genre
+            )
+    return render(
+        request,
+        "archive.html",
+        {"genres": genres, "is_library_created": is_library_created}
+    )
 
 
 @login_required
@@ -30,20 +36,25 @@ def archive_genres(request, selected_genre):
     user_settings = UserSettings.objects.filter(user = request.user)
     if not user_settings:
         return redirect('sound_archive:archive')
-    else:
-        is_library_created = True
-        genres = get_genres(request)
-        # if selected_genre not in genres:
-        #     abort(404)
-        # print(selected_genre)
-        subgenres = get_subgenres(request, selected_genre)
-        if request.method == "POST":
-            new_selected_genre = request.POST.get("selected_genre", None)
-            selected_subgenre = request.POST.get("selected_subgenre", None)
-            if new_selected_genre:
-                return redirect('sound_archive:archive_genres', selected_genre = new_selected_genre)
-            else:
-                return redirect('sound_archive:archive_subgenres', selected_genre = selected_genre, selected_subgenre = selected_subgenre)    
+
+    is_library_created = True
+    genres = get_genres(request)
+    # if selected_genre not in genres:
+    #     abort(404)
+    # print(selected_genre)
+    subgenres = get_subgenres(request, selected_genre)
+    if request.method == "POST":
+        new_selected_genre = request.POST.get("selected_genre", None)
+        selected_subgenre = request.POST.get("selected_subgenre", None)
+        if new_selected_genre:
+            return redirect(
+                'sound_archive:archive_genres',
+                selected_genre = new_selected_genre)
+        else:
+            return redirect(
+                'sound_archive:archive_subgenres',
+                selected_genre = selected_genre,
+                selected_subgenre = selected_subgenre)
     return render(request, "archive.html", {
         "genres": genres,
         "subgenres": subgenres,
@@ -58,31 +69,44 @@ def archive_subgenres(request, selected_genre, selected_subgenre):
     user_settings = UserSettings.objects.filter(user = request.user)
     if not user_settings:
         return redirect('sound_archive:archive')
-    else:
-        is_library_created = True
-        genres = get_genres(request)
-        # if selected_genre not in genres:
-        #     abort(404)
-        # print(selected_genre)
-        subgenres = get_subgenres(request, selected_genre)
-        # if selected_subgenre not in subgenres:
-        #     abort(404)
-        artists = get_artists_of_selected_subgenre(request, selected_genre, selected_subgenre)
 
-        if request.method == "POST":
-            new_selected_genre = request.POST.get("selected_genre", None)       
-            new_selected_subgenre = request.POST.get("selected_subgenre", None)
-            selected_artist_uri = request.POST.get("selected_artist_uri", None)
-            if new_selected_genre:
-                return redirect('sound_archive:archive_genres', selected_genre = new_selected_genre)
-            elif new_selected_subgenre:
-                return redirect('sound_archive:archive_subgenres', selected_genre = selected_genre, selected_subgenre = selected_subgenre)
-            else:
-                request.session["selected_artist_uri"] = selected_artist_uri
-                selected_artist_name = request.POST.get("selected_artist_name")
-                request.session["selected_artist_name"] = selected_artist_name
-                selected_artist_name = encode_characters(selected_artist_name)
-                return redirect('sound_archive:archive_tracks', selected_genre = selected_genre, selected_subgenre = selected_subgenre, selected_artist_name = selected_artist_name)
+    is_library_created = True
+    genres = get_genres(request)
+    # if selected_genre not in genres:
+    #     abort(404)
+    # print(selected_genre)
+    subgenres = get_subgenres(request, selected_genre)
+    # if selected_subgenre not in subgenres:
+    #     abort(404)
+    artists = get_artists_of_selected_subgenre(
+        request, selected_genre, selected_subgenre)
+
+    if request.method == "POST":
+        new_selected_genre = request.POST.get("selected_genre", None)
+        new_selected_subgenre = request.POST.get("selected_subgenre", None)
+        selected_artist_uri = request.POST.get("selected_artist_uri", None)
+        if new_selected_genre:
+            return redirect(
+                'sound_archive:archive_genres',
+                selected_genre = new_selected_genre
+                )
+        elif new_selected_subgenre:
+            return redirect(
+                'sound_archive:archive_subgenres',
+                selected_genre = selected_genre,
+                selected_subgenre = selected_subgenre
+                )
+        else:
+            request.session["selected_artist_uri"] = selected_artist_uri
+            selected_artist_name = request.POST.get("selected_artist_name")
+            request.session["selected_artist_name"] = selected_artist_name
+            selected_artist_name = encode_characters(selected_artist_name)
+            return redirect(
+                'sound_archive:archive_tracks',
+                selected_genre = selected_genre,
+                selected_subgenre = selected_subgenre,
+                selected_artist_name = selected_artist_name
+            )
     return render(request, "archive.html", {
         "genres": genres,
         "subgenres": subgenres,
@@ -99,47 +123,65 @@ def archive_tracks(request, selected_genre, selected_subgenre, selected_artist_n
     user_settings = UserSettings.objects.filter(user = request.user)
     if not user_settings:
         return redirect('sound_archive:archive')
+
+    is_library_created = True
+    genres = get_genres(request)
+    # if selected_genre not in genres:
+    #     abort(404)
+    subgenres = get_subgenres(request, selected_genre)
+    # if selected_subgenre not in subgenres:
+    #     abort(404)
+
+    selected_artist_name = request.session["selected_artist_name"]
+    artists = get_artists_of_selected_subgenre(
+        request,
+        selected_genre,
+        selected_subgenre)
+    selected_artist_uri = request.session["selected_artist_uri"]
+    # if (selected_artist_uri, selected_artist_name) not in artists:
+    #     abort(404)
+
+    if (selected_artist_uri, 
+        selected_artist_name) != ("Loose tracks", "Loose tracks"):
+        tracklist = get_tracks_of_artist(request, selected_artist_uri)
+        tracklist_featured = []
+        tracklist_featured = get_featured_tracks_of_artist(
+            request, selected_artist_name)
     else:
-        is_library_created = True
-        genres = get_genres(request)
-        # if selected_genre not in genres:
-        #     abort(404)
-        subgenres = get_subgenres(request, selected_genre)
-        # if selected_subgenre not in subgenres:
-        #     abort(404)
+        tracklist = get_loose_tracks_for_subgenre(
+            request, selected_genre, selected_subgenre)
+        tracklist_featured = []
 
-        selected_artist_name = request.session["selected_artist_name"]
-        artists = get_artists_of_selected_subgenre(request, selected_genre, selected_subgenre)
-        selected_artist_uri = request.session["selected_artist_uri"]
-        # if (selected_artist_uri, selected_artist_name) not in artists:
-        #     abort(404)
+    if request.method == "POST":
+        new_selected_genre = request.POST.get("selected_genre", None)
+        new_selected_subgenre = request.POST.get("selected_subgenre", None)
+        new_selected_artist_uri = request.POST.get("selected_artist_uri", None)
 
-        if (selected_artist_uri, selected_artist_name) != ("Loose tracks", "Loose tracks"):
-            tracklist = get_tracks_of_artist(request, selected_artist_uri)
-            tracklist_featured = []
-            tracklist_featured = get_featured_tracks_of_artist(request, selected_artist_name)
+        del request.session["selected_artist_uri"]
+        del request.session["selected_artist_name"]
+
+        if new_selected_genre:
+            return redirect(
+                'sound_archive:archive_genres',
+                selected_genre = new_selected_genre
+            )
+        elif new_selected_subgenre:
+            return redirect(
+                'sound_archive:archive_subgenres',
+                selected_genre = selected_genre,
+                selected_subgenre = selected_subgenre
+            )
         else:
-            tracklist = get_loose_tracks_for_subgenre(request, selected_genre, selected_subgenre)
-            tracklist_featured = []
-
-        if request.method == "POST":
-            new_selected_genre = request.POST.get("selected_genre", None)
-            new_selected_subgenre = request.POST.get("selected_subgenre", None)
-            new_selected_artist_uri = request.POST.get("selected_artist_uri", None)
-
-            del request.session["selected_artist_uri"]
-            del request.session["selected_artist_name"]
-
-            if new_selected_genre:
-                return redirect('sound_archive:archive_genres', selected_genre = new_selected_genre)
-            elif new_selected_subgenre:
-                return redirect('sound_archive:archive_subgenres', selected_genre = selected_genre, selected_subgenre = selected_subgenre)
-            else:
-                request.session["selected_artist_uri"] = new_selected_artist_uri
-                selected_artist_name = request.POST.get("selected_artist_name")
-                request.session["selected_artist_name"] = selected_artist_name
-                new_selected_artist_name = encode_characters(selected_artist_name)
-                return redirect('sound_archive:archive_tracks', selected_genre = selected_genre, selected_subgenre = selected_subgenre, selected_artist_name = new_selected_artist_name)       
+            request.session["selected_artist_uri"] = new_selected_artist_uri
+            selected_artist_name = request.POST.get("selected_artist_name")
+            request.session["selected_artist_name"] = selected_artist_name
+            new_selected_artist_name = encode_characters(selected_artist_name)
+            return redirect(
+                'sound_archive:archive_tracks',
+                selected_genre = selected_genre,
+                selected_subgenre = selected_subgenre,
+                selected_artist_name = new_selected_artist_name
+            )
 
     return render(request, "archive.html", {
         "genres": genres,
@@ -171,7 +213,8 @@ def get_genres(request):
     query = UserArtists.objects.filter(
         user=request.user,
         artist_uri__in=Subquery(subquery)
-    ).values('artist_main_genre_custom').distinct().order_by('artist_main_genre_custom')
+    ).values('artist_main_genre_custom').distinct() \
+    .order_by('artist_main_genre_custom')
 
     genres_list = list(query)
     genres = [genre['artist_main_genre_custom'] for genre in genres_list]
@@ -193,10 +236,14 @@ def get_subgenres(request, selected_genre):
         artist_main_genre_custom = selected_genre,
         user=request.user,
         artist_uri__in=Subquery(subquery)
-    ).values('artist_subgenre_custom').distinct().order_by('artist_subgenre_custom')
+    ).values('artist_subgenre_custom').distinct() \
+    .order_by('artist_subgenre_custom')
 
     subgenres_list = list(query)
-    subgenres = [subgenre['artist_subgenre_custom'] for subgenre in subgenres_list]
+    subgenres = [
+        subgenre['artist_subgenre_custom']
+        for subgenre in subgenres_list
+    ]
 
     if "others" in subgenres:
         subgenres.remove("others")
@@ -205,7 +252,9 @@ def get_subgenres(request, selected_genre):
 
 
 def get_artists_of_selected_subgenre(request, selected_genre, selected_subgenre):
-    '''Select all artists which play particular subgenre and user owns in his library at least 3 songs of this artist'''
+    '''Select all artists which play particular subgenre and user owns in his
+    library at least 3 songs of this artist
+    '''
 
     user_settings = UserSettings.objects.get(user = request.user)
     no_of_songs = user_settings.no_of_songs_into_folder
@@ -226,10 +275,14 @@ def get_artists_of_selected_subgenre(request, selected_genre, selected_subgenre)
         artist_main_genre_custom = selected_genre,
         artist_subgenre_custom = selected_subgenre,
         artist_uri__in=Subquery(subquery)
-    ).values('artist_uri__artist_uri', 'artist_name').distinct().order_by('artist_name')
+    ).values('artist_uri__artist_uri', 'artist_name') \
+    .distinct().order_by('artist_name')
 
     artists_list = list(query)
-    artists = [(artist['artist_uri__artist_uri'], artist['artist_name']) for artist in artists_list]
+    artists = [
+        (artist['artist_uri__artist_uri'], artist['artist_name'])
+        for artist in artists_list
+    ]
     artists.append(("Loose tracks", "Loose tracks"))
     return artists
 
@@ -299,7 +352,7 @@ def get_loose_tracks_for_subgenre(request, selected_genre, selected_subgenre):
 
     query = Tracks.objects.filter(
         usertracks__user=request.user,
-        usertracks__display_in_library=True,      
+        usertracks__display_in_library=True,
         main_artist_uri__artist_uri__in=Subquery(subquery_combined)
     ).values('track_artist_main', 'track_uri', 'track_artist_add1',
              'track_artist_add2', 'track_title', 'album_uri', 'main_artist_uri'

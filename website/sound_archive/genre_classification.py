@@ -3,7 +3,6 @@ import random
 from spotify_library.get_spotify_genres import spotify_get_artists_genres
 from spotify_library.models import Artists, UserArtists
 
-from django.contrib.auth.models import User
 
 
 def classify_artists_genres(request):
@@ -12,7 +11,6 @@ def classify_artists_genres(request):
     if artists:
         artists_uris = [artist.artist_uri[15:] for artist in list(artists)]
         artists_uris_genres = spotify_get_artists_genres(artists_uris, request)
-
         artists_uris_genres_main_genre = []
         for artist in artists_uris_genres:
             genres_string = ", ".join(artist[1])
@@ -86,12 +84,13 @@ rap = {
 def assign_main_genre(genres_string):
 
     genres_string = genres_string.lower()
-    main_genres_dict = dict()
-    #counting how many times names of the main genres occur in the artist_genres retrieved from spotify (exclude 0 times)
+    main_genres_dict = {}
+    # Counting how many times names of the main genres occur
+    # in the artist_genres retrieved from spotify (exclude 0 times)
     for item in main_genres:
         if genres_string.count(item) > 0:
             main_genres_dict[item] = genres_string.count(item)
-            
+
     #list of the biggest occurences
     genre_classification = [
         name for (name, num_of_occur) in main_genres_dict.items()

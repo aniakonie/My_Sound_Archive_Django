@@ -7,4 +7,3 @@ urlpatterns = [
     path("authorization", views.authorization, name='authorization'),
     path("callback", views.callback),
 ]
-

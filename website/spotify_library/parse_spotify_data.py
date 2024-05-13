@@ -20,14 +20,14 @@ def parse_spotify_data(
 def parse_playlists_info(spotify_playlists, playlists_to_discard, spotify_id):
     playlists_info_library = set()
     for playlist in spotify_playlists:
-            playlist_id = playlist["id"]
-            playlist_name = playlist["name"]
-            if playlist_name == '':
-                playlist_name = '[no name]'
-            is_owner = True if playlist["owner"]["id"] == spotify_id else False
-            playlist_info = (playlist_id, playlist_name, is_owner)
-            if playlist_id not in playlists_to_discard:
-                playlists_info_library.add(playlist_info)
+        playlist_id = playlist["id"]
+        playlist_name = playlist["name"]
+        if playlist_name == '':
+            playlist_name = '[no name]'
+        is_owner = True if playlist["owner"]["id"] == spotify_id else False
+        playlist_info = (playlist_id, playlist_name, is_owner)
+        if playlist_id not in playlists_to_discard:
+            playlists_info_library.add(playlist_info)
     return playlists_info_library
 
 
@@ -41,15 +41,14 @@ def parse_spotify_all_playlists_tracks(spotify_all_playlists_tracks):
         all_playlists_tracks_library[playlist] = []
         playlist_tracks = spotify_all_playlists_tracks[playlist]
         for track_info in playlist_tracks:
-            if track_info["track"] == None:
+            if track_info["track"] is None:
                 continue
-            elif track_info["track"]["is_local"] == True:
+            if track_info["track"]["is_local"] is True:
                 continue
-            elif 'episode' in track_info["track"]["uri"]:
+            if 'episode' in track_info["track"]["uri"]:
                 continue
-            else:
-                track = parse_track_info(track_info)
-                all_playlists_tracks_library[playlist].append(track)
+            track = parse_track_info(track_info)
+            all_playlists_tracks_library[playlist].append(track)
         #discard playlist if no tracks were added
         if all_playlists_tracks_library[playlist] == []:
             all_playlists_tracks_library.pop(playlist)
@@ -62,13 +61,12 @@ def parse_spotify_saved_tracks(spotify_saved_tracks):
     saved_tracks_library = []
 
     for track_info in spotify_saved_tracks:
-        if track_info["track"] == None:
+        if track_info["track"] is None:
             continue
-        elif track_info["track"]["is_local"] == True:
+        if track_info["track"]["is_local"] is True:
             continue
-        else:
-            track = parse_track_info(track_info)
-            saved_tracks_library.append(track)
+        track = parse_track_info(track_info)
+        saved_tracks_library.append(track)
     return saved_tracks_library
 
 

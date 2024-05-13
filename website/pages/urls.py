@@ -11,4 +11,3 @@ urlpatterns = [
     path("login", views.log_in),
     path("log-in-to-spotify",  views.log_in_to_spotify)
 ]
-
