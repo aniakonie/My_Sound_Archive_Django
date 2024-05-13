@@ -42,7 +42,6 @@ body {
 
 {% block content %}
 
-{% if is_library_created is True %}
     <div class="flex-container">
         <div class="flex-item fixed-width-3">
             <h3 style="color:white;">Genres</h3>
@@ -149,41 +148,4 @@ body {
     {% endif %}
 
 <div style="margin-bottom: 200px;"></div>
-{% endif %}
-
-{% if is_library_created is False %}
-<div class="flex-container">
-    <div class="flex-item fixed-width-3">
-        <h3 style="color:white;">Genres</h3>
-    </div>
-    <div class="flex-item fixed-width-1">
-        <h3 style="color:white;">Subgenres</h3>
-    </div>
-    <div class="flex-item fixed-width-2">
-        <h3 style="color:white;">Artists</h3>
-    </div>
-    <div class="flex-item flex-grow: 1">
-        <h3 style="color:white;">Tracks</h3>
-    </div>
-    </div>
-</div>
-
-<br>
-<br>
-<br>
-<br>
-
-<div class="container">
-<h5 style="text-align: center; color:white;">Nothing here yet. Please log in to Spotify to retrieve your music collection.</h5>
-<br>
-<div style="text-align: center;">
-    <form method="POST">
-        {% csrf_token %}
-        <input type=submit value="Log in to Spotify" class="btn btn-dark">
-    </form>
-</div>
-<div style="margin-bottom: 400px;"></div>
-{% endif %}
-
 {% endblock %}
-
