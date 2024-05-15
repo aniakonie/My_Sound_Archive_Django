@@ -7,7 +7,6 @@ def spotify_get_artists_genres(artists_uris, request):
 
     user = SpotifyToken.objects.get(user = request.user)
     access_token = user.access_token
-    print(access_token)
 
     artists_uris_genres = []
 

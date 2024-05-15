@@ -1,9 +1,11 @@
 from django import forms
+from django.http import Http404
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+
+from spotify_library.models import UserSettings
 
 
 #TODO move forms' style to html
@@ -38,6 +40,8 @@ def how_it_works(request):
 
 
 def sign_up(request):
+    if request.user.is_authenticated:
+        return redirect('sound_archive:archive')
     if request.method == "POST":
         form = SignupForm(request.POST)
         if form.is_valid():
@@ -62,11 +66,12 @@ def sign_up(request):
                     return redirect('pages:log_in_to_spotify')
     else:
         form = SignupForm()
-
     return render(request, "sign_up.html", {"form": form})
 
 
 def log_in(request):
+    if request.user.is_authenticated:
+        return redirect('sound_archive:archive')
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -83,26 +88,54 @@ def log_in(request):
                     "Wrong login credentials.")
     else:
         form = LoginForm()
-
     return render(request, "log_in.html", {"form": form})
 
 
-@login_required
 def log_out(request):
+    if not request.user.is_authenticated:
+        raise Http404
     logout(request)
     return redirect('pages:home')
 
 
-@login_required
 def log_in_to_spotify(request):
-    user = request.user
+    if not request.user.is_authenticated:
+        raise Http404
+    is_library_created = UserSettings.objects.filter(user=request.user)
+    if is_library_created:
+        return redirect('sound_archive:archive')
     if request.method == "POST":
         return redirect('spotify_auth:authorization')
     return render(
         request,
         "log_in_to_spotify.html",
-        {"username": user.username}
+        {"username": request.user.username}
         )
+
+
+def delete_account(request):
+    if not request.user.is_authenticated:
+        raise Http404
+    user_settings = UserSettings.objects.filter(user = request.user)
+    if user_settings:
+        is_library_created = True
+    else:
+        is_library_created = False
+    if request.method == "POST":
+        if request.POST.get("answer") == "Yes":
+            user = request.user
+            user.delete()
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Your account has been deleted.'
+            )
+            return redirect("pages:home")
+        else:
+            return redirect('sound_archive:archive')
+    return render(request, "delete_account.html", {
+        'is_library_created': is_library_created
+    })
 
 
 #TODO

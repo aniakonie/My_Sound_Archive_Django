@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render, redirect
 
 from .views import (
@@ -10,7 +11,7 @@ from .views import (
     get_loose_tracks_for_subgenre)
 
 
-USER_ID = 1
+USER_ID = 4
 
 
 def demo_archive(request):
@@ -32,9 +33,8 @@ def demo_archive(request):
 def demo_archive_genres(request, selected_genre):
 
     genres = get_genres(USER_ID)
-    # if selected_genre not in genres:
-    #     abort(404)
-    # print(selected_genre)
+    if selected_genre not in genres:
+        raise Http404
     subgenres = get_subgenres(USER_ID, selected_genre)
     if request.method == "POST":
         new_selected_genre = request.POST.get("selected_genre", None)
@@ -58,12 +58,11 @@ def demo_archive_genres(request, selected_genre):
 def demo_archive_subgenres(request, selected_genre, selected_subgenre):
 
     genres = get_genres(USER_ID)
-    # if selected_genre not in genres:
-    #     abort(404)
-    # print(selected_genre)
+    if selected_genre not in genres:
+        raise Http404
     subgenres = get_subgenres(USER_ID, selected_genre)
-    # if selected_subgenre not in subgenres:
-    #     abort(404)
+    if selected_subgenre not in genres:
+        raise Http404
     artists = get_artists_of_selected_subgenre(
         USER_ID, selected_genre, selected_subgenre)
 
@@ -105,11 +104,11 @@ def demo_archive_subgenres(request, selected_genre, selected_subgenre):
 def demo_archive_tracks(request, selected_genre, selected_subgenre, selected_artist_name):
 
     genres = get_genres(USER_ID)
-    # if selected_genre not in genres:
-    #     abort(404)
+    if selected_genre not in genres:
+        raise Http404
     subgenres = get_subgenres(USER_ID, selected_genre)
-    # if selected_subgenre not in subgenres:
-    #     abort(404)
+    if selected_subgenre not in genres:
+        raise Http404
 
     selected_artist_name = request.session["selected_artist_name"]
     artists = get_artists_of_selected_subgenre(
@@ -117,8 +116,8 @@ def demo_archive_tracks(request, selected_genre, selected_subgenre, selected_art
         selected_genre,
         selected_subgenre)
     selected_artist_uri = request.session["selected_artist_uri"]
-    # if (selected_artist_uri, selected_artist_name) not in artists:
-    #     abort(404)
+    if (selected_artist_uri, selected_artist_name) not in artists:
+        raise Http404
 
     if (selected_artist_uri,
         selected_artist_name) != ("Loose tracks", "Loose tracks"):

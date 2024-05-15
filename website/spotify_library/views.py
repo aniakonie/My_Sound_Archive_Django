@@ -1,27 +1,34 @@
 import time
 # import json
 
+from django.http import Http404
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 
+from spotify_auth.models import SpotifyToken
+from spotify_auth.views import get_access_token
+from sound_archive.genre_classification import classify_artists_genres
 from .models import UserSettings
 from .get_spotify_data import get_spotify_data
 from .parse_spotify_data import parse_spotify_data
 from .save_spotify_data import save_spotify_data
-from spotify_auth.models import SpotifyToken
-from spotify_auth.views import get_access_token
-from sound_archive.genre_classification import classify_artists_genres
 
 
-@login_required
 def create_archive(request):
+    if not request.user.is_authenticated:
+        raise Http404
+    is_library_created = UserSettings.objects.filter(user=request.user)
+    if is_library_created:
+        return redirect('sound_archive:archive')
+    is_token_saved = SpotifyToken.objects.filter(user=request.user)
+    if not is_token_saved:
+        return redirect('sound_archive:archive')
     if request.method == "POST":
-        if request.POST["create_archive"] == "Changed my mind":
-            return redirect("sound_archive:archive")
+        if request.POST['create_archive'] == 'Changed my mind':
+            return redirect('sound_archive:archive')
         else:
             do_create_archive(request)
-            return redirect("sound_archive:archive")
-    return render(request, "create_archive.html")
+            return redirect('sound_archive:archive')
+    return render(request, 'create_archive.html')
 
 
 def do_create_archive(request):

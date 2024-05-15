@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db.models import Subquery, Count, Q, Min
@@ -41,9 +42,8 @@ def archive_genres(request, selected_genre):
 
     is_library_created = True
     genres = get_genres(request.user)
-    # if selected_genre not in genres:
-    #     abort(404)
-    # print(selected_genre)
+    if selected_genre not in genres:
+        raise Http404
     subgenres = get_subgenres(request.user, selected_genre)
     if request.method == "POST":
         new_selected_genre = request.POST.get("selected_genre", None)
@@ -74,12 +74,11 @@ def archive_subgenres(request, selected_genre, selected_subgenre):
 
     is_library_created = True
     genres = get_genres(request.user)
-    # if selected_genre not in genres:
-    #     abort(404)
-    # print(selected_genre)
+    if selected_genre not in genres:
+        raise Http404
     subgenres = get_subgenres(request.user, selected_genre)
-    # if selected_subgenre not in subgenres:
-    #     abort(404)
+    if selected_subgenre not in genres:
+        raise Http404
     artists = get_artists_of_selected_subgenre(
         request.user, selected_genre, selected_subgenre)
 
@@ -128,11 +127,11 @@ def archive_tracks(request, selected_genre, selected_subgenre, selected_artist_n
 
     is_library_created = True
     genres = get_genres(request.user)
-    # if selected_genre not in genres:
-    #     abort(404)
+    if selected_genre not in genres:
+        raise Http404
     subgenres = get_subgenres(request.user, selected_genre)
-    # if selected_subgenre not in subgenres:
-    #     abort(404)
+    if selected_subgenre not in genres:
+        raise Http404
 
     selected_artist_name = request.session["selected_artist_name"]
     artists = get_artists_of_selected_subgenre(
@@ -140,8 +139,8 @@ def archive_tracks(request, selected_genre, selected_subgenre, selected_artist_n
         selected_genre,
         selected_subgenre)
     selected_artist_uri = request.session["selected_artist_uri"]
-    # if (selected_artist_uri, selected_artist_name) not in artists:
-    #     abort(404)
+    if (selected_artist_uri, selected_artist_name) not in artists:
+        raise Http404
 
     if (selected_artist_uri,
         selected_artist_name) != ("Loose tracks", "Loose tracks"):
@@ -208,7 +207,8 @@ def settings(request):
         user_playlists_included = user_playlists_excluded = []
         is_library_created = False
     else:
-        user_playlists_included, user_playlists_excluded = get_user_playlists(request.user)
+        user_playlists_included, user_playlists_excluded = get_user_playlists(
+            request.user)
         is_library_created = True
 
     if request.method == "POST":
@@ -221,7 +221,10 @@ def settings(request):
         delete_account = request.POST.get("delete_account", None)
 
         if number_of_songs_into_folders:
-            change_number_of_songs_into_folders(request.user, number_of_songs_into_folders)
+            change_number_of_songs_into_folders(
+                request.user,
+                number_of_songs_into_folders
+            )
             messages.add_message(
                     request,
                     messages.SUCCESS,
@@ -230,7 +233,11 @@ def settings(request):
             return redirect('sound_archive:settings')
 
         elif playlist_id_exclude or playlist_id_include:
-            change_display_to = change_playlist_display_setting(request.user, playlist_id_exclude, playlist_id_include)
+            change_display_to = change_playlist_display_setting(
+                request.user,
+                playlist_id_exclude,
+                playlist_id_include
+            )
             if change_display_to is False:
                 messages.add_message(
                     request,
@@ -246,8 +253,7 @@ def settings(request):
             return redirect('sound_archive:settings')
 
         elif delete_account:
-            #TODO
-            return redirect('sound_archive:settings')
+            return redirect('pages:delete_account')
 
     return render(request, "settings.html", {
         'user_playlists_included': user_playlists_included,
@@ -255,7 +261,6 @@ def settings(request):
         'numbers': list(range(1,11)),
         'is_library_created': is_library_created,
         })
-
 
 
 def encode_characters(param):

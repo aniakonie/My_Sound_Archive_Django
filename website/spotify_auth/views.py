@@ -7,36 +7,47 @@ import urllib.parse
 import requests
 from dotenv import load_dotenv
 
+from django.http import Http404
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 
+from spotify_library.models import UserSettings
 from .models import SpotifyToken
 
 load_dotenv()
 
 
-@login_required
+
 def authorization(request):
+    if not request.user.is_authenticated:
+        raise Http404    
+    is_library_created = UserSettings.objects.filter(user=request.user)
+    if is_library_created:
+        return redirect('sound_archive:archive')
+    is_token_saved = SpotifyToken.objects.filter(user=request.user)
+    if is_token_saved:
+        return redirect('spotify_library:create_archive')
+
     spotify_login_page_url, state = request_authorization()
     request.session['state'] = state
     return redirect(spotify_login_page_url)
 
 
-@login_required
 def callback(request):
+    if not request.user.is_authenticated:
+        raise Http404
     '''in case user accepted app's request and logged in:
     retrieving query parameters (code and state) from spotify callback
     '''
     state_received = request.GET.get("state", None)
     # User tried to access this url by typing it in the browser.
     if state_received is None:
-        pass
-        # abort(401)
+        raise Http404
     else:
         if state_received != request.session['state']:
             pass
-            # message
+            #TODO
         else:
             del request.session['state']
             # Spotify sent back an error - something went wrong
@@ -53,16 +64,16 @@ def callback(request):
                         whether to accept it, please head over to 
                         'How it works' page and find out more about the app.
                         ''')
-                    # return redirect(url_for("library_bp.library"))
+                    return redirect('sound_archive:archive')
                 else:
                     messages.add_message(
                         request,
                         messages.ERROR,
                         '''Oops, something went wrong. Spotify refused 
                         to cooperate. Please try again by clicking 
-                        'Log in to Spotify
+                        'Log in to Spotify'
                         ''')
-                    # return redirect(url_for("library_bp.library"))
+                    return redirect('sound_archive:archive')
             else:
                 code = request.GET.get("code")
                 access_token, refresh_token = get_token_initial(code)
@@ -151,7 +162,7 @@ def save_token(access_token, refresh_token, request):
                 messages.add_message(
                     request,
                     messages.ERROR,
-                    ''''You have My Sound Archive account with this Spotify
+                    '''You have My Sound Archive account with this Spotify
                     account already, please log in to this account.
                     ''')
                 return redirect('pages:home')
