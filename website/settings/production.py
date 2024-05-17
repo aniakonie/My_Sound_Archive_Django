@@ -1,6 +1,6 @@
 from website.settings.base import *
 
-DEBUG=False
+DEBUG = os.getenv('DEBUG')
 
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
@@ -14,4 +14,3 @@ ALLOWED_HOSTS = ['mysoundarchive', 'www.mysoundarchive']
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
