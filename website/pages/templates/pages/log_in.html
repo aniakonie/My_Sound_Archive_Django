@@ -34,12 +34,10 @@ body {
     <br>
     <form action="/login" method="post">
         {% csrf_token %}
-
-        {{ form.username.label }}:<br>
+        <label style="color:white;">Username:</label><br>
         {{ form.username }}<br>
-        {{ form.password.label }}:<br>
+        <label style="color:white;">Password:</label><br>
         {{ form.password }}
-
     <div style="margin-bottom: 5px;"></div>
     <br>
     <br>

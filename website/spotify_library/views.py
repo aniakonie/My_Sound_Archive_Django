@@ -1,5 +1,5 @@
 import time
-# import json
+import json
 
 from django.http import Http404
 from django.shortcuts import render, redirect
@@ -44,16 +44,6 @@ def do_create_archive(request):
         )
     end = time.perf_counter()
     print('spotify_data time: ', end - start)
-
-
-    # with open('spotify_playlists.json', 'r') as json_file:
-    #     spotify_playlists = json.load(json_file)
-
-    # with open('spotify_saved_tracks.json', 'r') as json_file:
-    #     spotify_saved_tracks = json.load(json_file)
-
-    # with open('spotify_all_playlists_tracks.json', 'r') as json_file:
-    #     spotify_all_playlists_tracks = json.load(json_file)
 
 
     start = time.perf_counter()

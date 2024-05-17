@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 from django.http import Http404
 from django.contrib import messages
 from django.shortcuts import redirect
-from django.contrib.auth.decorators import login_required
 
 from spotify_library.models import UserSettings
 from .models import SpotifyToken
@@ -35,11 +34,11 @@ def authorization(request):
 
 
 def callback(request):
-    if not request.user.is_authenticated:
-        raise Http404
     '''in case user accepted app's request and logged in:
     retrieving query parameters (code and state) from spotify callback
     '''
+    if not request.user.is_authenticated:
+        raise Http404
     state_received = request.GET.get("state", None)
     # User tried to access this url by typing it in the browser.
     if state_received is None:

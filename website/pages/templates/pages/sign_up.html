@@ -34,15 +34,13 @@ body {
     <br>
     <form action="/signup" method="post">
         {% csrf_token %}
-
-        {{ form.username.label }}:<br>
+        <label style="color:white;">Username:</label><br>
         {{ form.username }}<br>
-        {{ form.password.label }}:<br>
+        <label style="color:white;">Password:</label><br>
         {{ form.password }}
-
     <div style="margin-bottom: 5px;"></div>
     <input type="checkbox" onclick="myFunction()" id="checkbox">
-    <label for="checkbox" style="color:white;"> Show Password</label>
+    <label for="checkbox" style="color:white;"> show password</label>
     <br>
     <br>
     <input type=submit value="Register" class="btn btn-dark">
