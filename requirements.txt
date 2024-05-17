@@ -4,7 +4,7 @@ charset-normalizer==3.3.2
 colorama==0.4.6
 dj-database-url==2.1.0
 Django==5.0.4
-gunicorn==19.9.0
+gunicorn==21.2.0
 idna==3.7
 iniconfig==2.0.0
 packaging==24.0
