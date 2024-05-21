@@ -20,7 +20,7 @@ load_dotenv()
 
 def authorization(request):
     if not request.user.is_authenticated:
-        raise Http404    
+        raise Http404  
     is_library_created = UserSettings.objects.filter(user=request.user)
     if is_library_created:
         return redirect('sound_archive:archive')

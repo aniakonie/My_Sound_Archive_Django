@@ -77,7 +77,7 @@ def archive_subgenres(request, selected_genre, selected_subgenre):
     if selected_genre not in genres:
         raise Http404
     subgenres = get_subgenres(request.user, selected_genre)
-    if selected_subgenre not in genres:
+    if selected_subgenre not in subgenres:
         raise Http404
     artists = get_artists_of_selected_subgenre(
         request.user, selected_genre, selected_subgenre)
@@ -95,7 +95,7 @@ def archive_subgenres(request, selected_genre, selected_subgenre):
             return redirect(
                 'sound_archive:archive_subgenres',
                 selected_genre = selected_genre,
-                selected_subgenre = selected_subgenre
+                selected_subgenre = new_selected_subgenre
                 )
         else:
             request.session["selected_artist_uri"] = selected_artist_uri
@@ -130,7 +130,7 @@ def archive_tracks(request, selected_genre, selected_subgenre, selected_artist_n
     if selected_genre not in genres:
         raise Http404
     subgenres = get_subgenres(request.user, selected_genre)
-    if selected_subgenre not in genres:
+    if selected_subgenre not in subgenres:
         raise Http404
 
     selected_artist_name = request.session["selected_artist_name"]
@@ -170,7 +170,7 @@ def archive_tracks(request, selected_genre, selected_subgenre, selected_artist_n
             return redirect(
                 'sound_archive:archive_subgenres',
                 selected_genre = selected_genre,
-                selected_subgenre = selected_subgenre
+                selected_subgenre = new_selected_subgenre
             )
         else:
             request.session["selected_artist_uri"] = new_selected_artist_uri

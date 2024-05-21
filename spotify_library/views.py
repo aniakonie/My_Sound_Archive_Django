@@ -45,7 +45,6 @@ def do_create_archive(request):
     end = time.perf_counter()
     print('spotify_data time: ', end - start)
 
-
     start = time.perf_counter()
     (playlists_info_library, saved_tracks_library,
      all_playlists_tracks_library) = parse_spotify_data(
