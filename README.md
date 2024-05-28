@@ -77,6 +77,8 @@ http://github.com/users/aniakonie/projects/1
 
 2. Install poetry to set up a virtual environment:<br>
     `pip install poetry`
+    Change poetry configuration so that the virtual environments will be installed in the project folder:
+    `poetry config virtualenvs.in-project true`
 
 3. Navigate to the project directory containing the `pyproject.toml` file and create a virtual environment with the following command:<br>
     `poetry install`<br>
@@ -109,7 +111,6 @@ http://github.com/users/aniakonie/projects/1
 7. Navigate to the root directory of the project, activate your environment and initialize database migrations with the following commands:<br>
 
     `poetry shell`<br>
-    `python manage.py makemigrations`<br>
     `python manage.py migrate`
 
 8. With your environment activated, run the application using `python manage.py runserver`<br>
