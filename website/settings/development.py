@@ -9,4 +9,4 @@ load_dotenv()
 database_url = os.getenv('DATABASE_URL')
 DATABASES['default'] = dj_database_url.parse(database_url)
 
-DEBUG = True
+DEBUG = False
