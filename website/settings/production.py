@@ -1,6 +1,6 @@
 from website.settings.base import *
 
-DEBUG = os.getenv('DEBUG')
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
