@@ -1,7 +1,5 @@
 from website.settings.base import *
 
-DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
-
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
