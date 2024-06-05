@@ -9,7 +9,7 @@ load_dotenv()
 database_url = os.getenv('DATABASE_URL')
 DATABASES['default'] = dj_database_url.parse(database_url)
 
-DEBUG = False
+DEBUG = os.getenv('DEBUG')
 
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
