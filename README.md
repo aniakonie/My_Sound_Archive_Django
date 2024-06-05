@@ -34,6 +34,7 @@ My Sound Archive app retrieves liked songs and all tracks from a user's playlist
 * Spotify REST API
 * OAuth 2.0
 * Bootstrap 5.3
+* Docker, Poetry
 
 ## APIs used
 
@@ -70,7 +71,48 @@ You can check what I am currently working on here:
 http://github.com/users/aniakonie/projects/1
 
 
-## Setup
+## Setup with Docker
+
+1. Clone the repository:<br>
+    `git clone https://github.com/aniakonie/My_Sound_Archive_Django.git`
+
+2. Create a new `.env` file and save it in the root directory of the project.<br>
+
+    Add the following variables to the file (values to be added in the next steps):<br>
+    `CLIENT_ID = ""`<br>
+    `CLIENT_SECRET = ""`<br>
+    `SECRET_KEY = ""`<br>
+    `REDIRECT_URI_SPOTIFY = "http://127.0.0.1:8000/spotify/callback"`<br>
+    `DEMO_USER_ID = ""`<br>
+    `DB_DOCKER_PASSWORD = ""`<br>
+    (`SECRET_KEY` should be a long random bytes or string)<br>
+    (`DEMO_USER_ID` is the ID of the user whose archive is shown on the "see an example" page)<br>
+    (`DB_DOCKER_PASSWORD` - choose your password)
+
+3. Head over to Spotify for Developers: http://developer.spotify.com/<br>
+    Go to your dashboard and create a new app.<br>
+    In the "Redirect URIs" field, paste the following link: `http://127.0.0.1:8000/spotify/callback`<br>
+    Copy your Client ID and Client Secret to your `.env` file (`CLIENT_ID` and `CLIENT_SECRET`).
+
+4. Install Docker Desktop from Docker’s official website, if you haven’t already.
+
+5. In terminal, head over to the root directory of the project containing `Dockerfile` and `compose.yaml` and run the command:<br>
+    `docker-compose up -d` 
+    
+6. To perform the initial migration for the database, execute the following command:<br>
+    `docker-compose exec web python manage.py migrate`
+    
+7. With the development server running, visit the following URL in your browser:
+    
+    http://127.0.0.1:8000/
+
+8. If you wish to stop the Docker containers, run:<br>
+    
+    `docker-compose down`<br>
+    All data that was added to the database will be stored in the root folder of the project. Next time you run `docker-compose up -d`, no additional commands need to be executed and your postgres data will be abailable to use.
+
+
+## Setup with Poetry
 
 1. Clone the repository:<br>
     `git clone https://github.com/aniakonie/My_Sound_Archive_Django.git`
@@ -92,7 +134,6 @@ http://github.com/users/aniakonie/projects/1
     `SECRET_KEY = ""`<br>
     `DATABASE_URL = ""`<br>
     `REDIRECT_URI_SPOTIFY = "http://127.0.0.1:8000/spotify/callback"`<br>
-    <br>
     `DEMO_USER_ID = ""`<br>
     (`SECRET_KEY` should be a long random bytes or string)<br>
     (`DEMO_USER_ID` is the ID of the user whose archive is shown on the "see an example" page)
@@ -117,3 +158,4 @@ http://github.com/users/aniakonie/projects/1
 
     With the development server running, visit the following URL in your browser:<br>
     http://127.0.0.1:8000/
+
