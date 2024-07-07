@@ -39,7 +39,7 @@ body {
 {% endblock %}
 
 {% block title %}My Archive{% endblock %}
-
+{% load static %}
 {% block content %}
 
     <div class="flex-container">
@@ -97,46 +97,58 @@ body {
             <div style="margin-bottom: 20px;"></div>
             {% if selected_artist_name != "Loose tracks" %}
                 {% for track in tracklist %}
-                    <button type="button" class="btn btn-dark">
-                        <a class="play_track" href="{{ track.track_uri }}">PL</a> <a class="open_album" href="{{ track.album_uri }}">AL</a>
-                        <span class="track">{{ track.track_title }}</span>
-                    </button>
-                    <div style="margin-bottom: 5px;"></div>
+                    <div class="d-flex align-items-center mb-2">
+                        <a href="{{ track.track_uri }}" class="me-2">
+                            <img src="{% static 'images/Spotify_Icon_RGB_White.png' %}" alt="Play on Spotify" width="21px">
+                        </a>
+                        <a href="{{ track.album_uri }}" class="me-2">
+                            <img src="{% static 'images/Spotify_Icon_RGB_White.png' %}" alt="Open album on Spotify" width="21px">
+                        </a>
+                        <span class="text-white me-2">{{ track.track_title }}</span>
+                        {% if track.track_artist_add1 or track.track_artist_add2 %}
+                            <span class="text-white">[with {{ track.track_artist_add1 }}{% if track.track_artist_add2 %}, {{ track.track_artist_add2 }}{% endif %}]</span>
+                        {% endif %}
+                    </div>
                 {% endfor %}
-            
+
             {% else %}
                 {% for track in tracklist %}
-                    <button type="button" class="btn btn-dark">
-                        <a class="play_track" href="{{ track.track_uri }}">PL</a><span> </span>
-                        <a class="open_album" href="{{ track.album_uri }}">AL</a>
-                        <span class="track">{{ track.track_artist_main }} - {{ track.track_title }} </span>          
-                        {% if track.track_artist_add1 != '' %}
-                        <span class="track_add">[ with {{ track.track_artist_add1 }}
-                        {% if track.track_artist_add2 != '' %}
-                        <span class="track_add">, {{ track.track_artist_add2 }}</span>
-                        {% endif %}]
-                        </span>
+                    <div class="d-flex align-items-center">
+                        <a href="{{ track.track_uri }}" class="me-2">
+                            <img src="{% static 'images/Spotify_Icon_RGB_White.png' %}" alt="Play on Spotify" width="21px">
+                        </a>
+                        <a href="{{ track.album_uri }}" class="me-2">
+                            <img src="{% static 'images/Spotify_Icon_RGB_White.png' %}" alt="Open album on Spotify" width="21px">
+                        </a>
+                        <span style="color:white;" class="me-2">{{ track.track_artist_main }} - {{ track.track_title }}</span>          
+                        {% if track.track_artist_add1 or track.track_artist_add2 %}
+                            <span style="color:white;">[with {{ track.track_artist_add1 }}{% if track.track_artist_add2 %}, {{ track.track_artist_add2 }}{% endif %}]</span>
                         {% endif %}
-                    </button>
-                    <div style="margin-bottom: 5px;"></div>    
+                    </div>
+                    <div style="margin-bottom: 10px;"></div>  
                 {% endfor %}
             {% endif %}
 
             <br>
             {% if tracklist_featured|length > 0 %}
             <h5 style="color:white;">Featured tracks</h5>
-                {% for track in tracklist_featured %}    
-                    <button type="button" class="btn btn-dark">
-                        <a class="play_track" href="{{ track.track_uri }}">PL</a><span> </span>
-                        <a class="open_album" href="{{ track.album_uri }}">AL</a>
-                        <span class="track">{{ track.track_artist_main }} - {{ track.track_title }} </span>          
-                        <span class="track_add">[ with {{ track.track_artist_add1 }}
-                        {% if track.track_artist_add2 != '' %}
-                        <span class="track_add">, {{ track.track_artist_add2 }}</span>
-                        {% endif %}<span>]</span>
+            <div style="margin-bottom: 15px;"></div>
+                {% for track in tracklist_featured %}
+                    <div class="d-flex align-items-center mb-2">
+                        <a href="{{ track.track_uri }}" class="me-2">
+                            <img src="{% static 'images/Spotify_Icon_RGB_White.png' %}" alt="Play on Spotify" width="21px">
+                        </a>
+                        <a href="{{ track.album_uri }}" class="me-2">
+                            <img src="{% static 'images/Spotify_Icon_RGB_White.png' %}" alt="Open album on Spotify" width="21px">
+                        </a>
+                        <span class="text-white me-2">{{ track.track_artist_main }} - {{ track.track_title }}</span>
+                        <span class="text-white">
+                            {% if track.track_artist_add1 or track.track_artist_add2 %}
+                                [with {{ track.track_artist_add1 }}{% if track.track_artist_add2 %}, {{ track.track_artist_add2 }}{% endif %}]
+                            {% endif %}
                         </span>
-                    </button>
-                    <div style="margin-bottom: 5px;"></div> 
+                    </div>
+                    <div style="margin-bottom: 10px;"></div> 
                 {% endfor %}
             {% endif %}
         </div>

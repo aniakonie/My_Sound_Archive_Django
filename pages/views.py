@@ -39,6 +39,14 @@ def how_it_works(request):
     return render(request, "how_it_works.html")
 
 
+def privacy_policy(request):
+    return render(request, "privacy_policy.html")
+
+
+def contact(request):
+    return render(request, "contact.html")
+
+
 def sign_up(request):
     if request.user.is_authenticated:
         return redirect('sound_archive:archive')
