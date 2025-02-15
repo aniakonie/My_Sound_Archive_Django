@@ -55,7 +55,6 @@ def save_all_playlists_tracks(all_playlists_tracks_library, request):
                 display_in_library = display_in_library,
                 user = request.user
             )
-            user_track.save()
 
 
 def add_track_to_tracks(track, new_artist):
@@ -77,7 +76,6 @@ def add_track_to_tracks(track, new_artist):
         album_title = track["album_title"][:100],
         album_uri = track["album_uri"]
     )
-    new_track.save()
     return new_track
 
 
@@ -87,7 +85,6 @@ def add_artist_to_artists(track):
         artist_uri = track["main_artist_uri"],
         artist_name = track["track_artist_main"][0:50],
     )
-    new_artist.save()
     return new_artist
 
 
@@ -98,4 +95,3 @@ def add_artist_to_user_artists(track, request, new_artist):
         artist_name = track["track_artist_main"][0:50],
         user = request.user
     )
-    user_artist.save()

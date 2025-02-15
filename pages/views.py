@@ -16,12 +16,12 @@ class SignupForm(forms.Form):
     username.widget.attrs['class'] = "form-control"
     username.widget.attrs['style'] = "background-color :rgb(20, 20, 20); color:white;"
     # delete line below to reactivate text field
-    username.widget.attrs['disabled'] = 'disabled'
+    #username.widget.attrs['disabled'] = 'disabled'
     password.widget.attrs['class'] = "form-control"
     password.widget.attrs['style'] = "background-color :rgb(20, 20, 20); color:white;"
     password.widget.attrs['id'] = 'pswd'
     # delete line below to reactivate text field
-    password.widget.attrs['disabled'] = 'disabled'
+    #password.widget.attrs['disabled'] = 'disabled'
 
 
 class LoginForm(forms.Form):
@@ -54,28 +54,28 @@ def contact(request):
 def sign_up(request):
     if request.user.is_authenticated:
         return redirect('sound_archive:archive')
-    # if request.method == "POST":
-    #     form = SignupForm(request.POST)
-    #     if form.is_valid():
-    #         username = form.cleaned_data["username"]
-    #         password = form.cleaned_data["password"]
-    #         is_already_taken = User.objects.filter(username=username)
-    #         if is_already_taken:
-    #             messages.add_message(
-    #                 request,
-    #                 messages.ERROR,
-    #                 '''Such user already exists.
-    #                 Please choose different username.''')
-    #         else:
-    #             user = User.objects.create_user(
-    #                 username=username,
-    #                 password=password
-    #                 )
-    #             user.save()
-    #             user_auth = authenticate(username=username, password=password)
-    #             if user_auth:
-    #                 login(request, user_auth)
-    #                 return redirect('pages:log_in_to_spotify')
+    if request.method == "POST":
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            is_already_taken = User.objects.filter(username=username)
+            if is_already_taken:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    '''Such user already exists.
+                    Please choose different username.''')
+            else:
+                user = User.objects.create_user(
+                    username=username,
+                    password=password
+                    )
+                user.save()
+                user_auth = authenticate(username=username, password=password)
+                if user_auth:
+                    login(request, user_auth)
+                    return redirect('pages:log_in_to_spotify')
     else:
         form = SignupForm()
     return render(request, "sign_up.html", {"form": form})
