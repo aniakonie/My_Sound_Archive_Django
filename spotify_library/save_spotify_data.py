@@ -1,3 +1,4 @@
+from django.db.utils import IntegrityError
 from .models import Tracks, UserTracks, UserPlaylists, UserArtists, Artists
 
 
@@ -59,32 +60,37 @@ def save_all_playlists_tracks(all_playlists_tracks_library, request):
 
 def add_track_to_tracks(track, new_artist):
 
-    new_track, created = Tracks.objects.get_or_create(
-        track_uri = track["track_uri"],
-        track_artist_main = track["track_artist_main"][:100],
-        main_artist_uri = new_artist,
-        track_artist_add1 = track["track_artist_add1"][:100]
-        if track["track_artist_add1"] is not None else '',
-        track_artist_add2 = track["track_artist_add2"][:100]
-        if track["track_artist_add2"] is not None else '',
-        track_title = track["track_title"][:100],
-        album_artist_main = track["album_artist_main"][:100],
-        album_artist_add1 = track["album_artist_add1"][:100]
-        if track["album_artist_add1"] is not None else '',
-        album_artist_add2 = track["album_artist_add2"][:100]
-        if track["album_artist_add2"] is not None else '',
-        album_title = track["album_title"][:100],
-        album_uri = track["album_uri"]
-    )
+    try:
+        new_track, created = Tracks.objects.get_or_create(
+            track_uri = track["track_uri"],
+            track_artist_main = track["track_artist_main"][:100],
+            main_artist_uri = new_artist,
+            track_artist_add1 = track["track_artist_add1"][:100]
+            if track["track_artist_add1"] is not None else '',
+            track_artist_add2 = track["track_artist_add2"][:100]
+            if track["track_artist_add2"] is not None else '',
+            track_title = track["track_title"][:100],
+            album_artist_main = track["album_artist_main"][:100],
+            album_artist_add1 = track["album_artist_add1"][:100]
+            if track["album_artist_add1"] is not None else '',
+            album_artist_add2 = track["album_artist_add2"][:100]
+            if track["album_artist_add2"] is not None else '',
+            album_title = track["album_title"][:100],
+            album_uri = track["album_uri"]
+        )
+    except IntegrityError:
+        new_track = Tracks.objects.get(track_uri = track["track_uri"])
     return new_track
 
 
 def add_artist_to_artists(track):
-
-    new_artist, created = Artists.objects.get_or_create(
-        artist_uri = track["main_artist_uri"],
-        artist_name = track["track_artist_main"][0:50],
-    )
+    try:
+        new_artist, created = Artists.objects.get_or_create(
+            artist_uri = track["main_artist_uri"],
+            artist_name = track["track_artist_main"][0:50],
+        )
+    except IntegrityError:
+        new_artist = Artists.objects.get(artist_uri = track["main_artist_uri"])       
     return new_artist
 
 
